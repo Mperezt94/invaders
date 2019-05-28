@@ -95,7 +95,7 @@ public class AlienArmy {
     }
 
     void shoot(Assets assets){
-        if(shootTimer.check()){
+        if(shootTimer.check() && aliens.size>0){
             int alienNum = random.nextInt(aliens.size);
 
             Alien alien = aliens.get(alienNum);

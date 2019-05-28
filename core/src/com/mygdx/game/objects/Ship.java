@@ -9,7 +9,7 @@ import com.mygdx.game.Controls;
 public class Ship {
 
     enum State {
-        IDLE, LEFT, RIGHT, SHOOT;
+        IDLE, LEFT, RIGHT, SHOOT, DESTROYED
     }
 
     Vector2 position;
@@ -17,6 +17,7 @@ public class Ship {
     State state;
     float stateTime;
     float speed = 5;
+    int life;
 
     TextureRegion frame;
 
@@ -26,8 +27,8 @@ public class Ship {
         position = new Vector2(initialPosition, 10);
         state = State.IDLE;
         stateTime = 0;
-
         weapon = new Weapon();
+        life = 3;
     }
 
 
@@ -45,6 +46,9 @@ public class Ship {
             case SHOOT:
                 frame = assets.naveshoot.getKeyFrame(stateTime, true);
                 break;
+            case DESTROYED:
+                frame = assets.navedestroyed.getKeyFrame(stateTime, false);
+                break;
             default:
                 frame = assets.naveidle.getKeyFrame(stateTime, true);
                 break;
@@ -60,22 +64,32 @@ public class Ship {
     public void update(float delta, Assets assets) {
         stateTime += delta;
 
-        if(Controls.isLeftPressed()){
-            moveLeft();
-        } else if(Controls.isRightPressed()){
-            moveRight();
-        } else {
-            idle();
-        }
 
-        if(Controls.isShootPressed()) {
-            shoot();
-            assets.shootSound.play();
-        }
+        if (state != State.DESTROYED) {
+            if (Controls.isLeftPressed()) {
+                moveLeft();
+            } else if (Controls.isRightPressed()) {
+                moveRight();
+            } else {
+                idle();
+            }
 
+            if (Controls.isShootPressed()) {
+                shoot();
+                assets.shootSound.play();
+            }
+
+            if (life == 0) {
+                state = State.DESTROYED;
+                stateTime = 0;
+            }
+            else if(life<0)life = 0;
+
+            weapon.update(delta, assets);
+        }
         setFrame(assets);
 
-        weapon.update(delta, assets);
+
     }
 
     void idle(){
@@ -98,6 +112,14 @@ public class Ship {
     }
 
     public void damage() {
-
+        if(life>0) {
+            life--;
+        }
     }
+
+    public void powerUp() {
+
+        weapon.powerUp();
+    }
+
 }

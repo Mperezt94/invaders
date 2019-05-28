@@ -10,9 +10,10 @@ public class Space {
 
     TextureRegion frame;
 
-    void render(SpriteBatch batch){
+    public void render(SpriteBatch batch){
         batch.draw(frame, 0, 0);
     }
+
 
     public void update(float delta, Assets assets) {
         stateTime += delta;

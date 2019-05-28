@@ -1,14 +1,16 @@
 package com.mygdx.game.screen;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.game.Controls;
 import com.mygdx.game.SpaceInvaders;
-import com.mygdx.game.Timer;
-import com.mygdx.game.objects.World;
+import com.mygdx.game.objects.Space;
 
-public class GameScreen extends SpaceInvadersScreen {
+public class EndGameScreen extends SpaceInvadersScreen {
 
     public SpriteBatch spriteBatch;
 
@@ -18,14 +20,14 @@ public class GameScreen extends SpaceInvadersScreen {
     public int SCENE_WIDTH = 384;
     public int SCENE_HEIGHT = 256;
 
-    float waitTime;
+    Space space;
+    BitmapFont font = new BitmapFont();
 
-    World world;
-    Timer timer;
 
-    public GameScreen(SpaceInvaders spaceInvaders) {
+    public EndGameScreen(SpaceInvaders spaceInvaders) {
         super(spaceInvaders);
     }
+
 
     @Override
     public void show() {
@@ -35,35 +37,41 @@ public class GameScreen extends SpaceInvadersScreen {
         viewport.apply();
 
         spriteBatch = new SpriteBatch();
+        space = new Space();
 
-        world = new World(SCENE_WIDTH, SCENE_HEIGHT);
+    }
 
-        waitTime = 2.5f;
+    public void update(float delta) {
 
-        timer = new Timer(waitTime);
+        space.update(delta,assets);
+
+        if(Controls.isEnterPressed()){
+            Gdx.app.exit();
+        }
+
     }
 
     @Override
     public void render(float delta) {
+
+        update(delta);
+
+        spriteBatch.begin();
         spriteBatch.setProjectionMatrix(camera.combined);
+        space.render(spriteBatch);
+        font.getData().setScale(2);
+        font.draw(spriteBatch,"GAME OVER",SCENE_WIDTH/2-90,SCENE_HEIGHT/2+20);
+        font.getData().setScale(1);
+        font.draw(spriteBatch,"Press ENTER to close",SCENE_WIDTH/2-75,SCENE_HEIGHT/2-20);
+        spriteBatch.end();
 
-        world.render(delta, spriteBatch, assets);
 
-        if(world.gameOver()){
-            timer.update(delta);
-            if (timer.check()) {
-                setScreen(new EndGameScreen(game));
-            }
-        }
-        else if(world.endGame()){
-            setScreen(new WinScreen(game));
-        }
     }
 
     @Override
     public void resize(int width, int height) {
         super.resize(width,height);
-
         viewport.update(width ,height);
     }
+
 }

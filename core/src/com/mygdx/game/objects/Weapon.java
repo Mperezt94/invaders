@@ -13,8 +13,8 @@ public class Weapon {
     float shootRate = 0.4f;
 
     Weapon(){
-        shoots = new Array<Shoot>();
-        shootTimer = new Timer(shootRate);
+        this.shoots = new Array<Shoot>();
+        this.shootTimer = new Timer(shootRate);
     }
 
     void render(SpriteBatch batch){
@@ -49,4 +49,10 @@ public class Weapon {
             shoots.removeValue(shoot, true);
         }
     }
+
+    public void powerUp() {
+        shootRate/=2;
+        this.shootTimer = new Timer(shootRate);
+    }
+
 }
